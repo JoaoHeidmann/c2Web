@@ -1,0 +1,26 @@
+{
+  "version": 2,
+  "builds": [
+    {
+      "src": "index.ts",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/items",
+      "methods": ["GET", "POST"],
+      "dest": "index.ts"
+    },
+    {
+      "src": "/items/(.*)",
+      "methods": ["PUT", "DELETE"],
+      "dest": "index.ts"
+    },
+    {
+      "src": "/",
+      "methods": ["GET"],
+      "dest": "index.html"
+    }
+  ]
+}

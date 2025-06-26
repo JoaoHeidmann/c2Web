@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Supabase CRUD</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 20px; background-color: #f5f5f5; }
+    h1 { color: #333; }
+    input, button { padding: 8px; margin: 4px; }
+    .item { background: #fff; padding: 10px; margin: 10px 0; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Gerenciador de Itens</h1>
+
+  <div>
+    <input type="text" id="nome" placeholder="Nome" />
+    <input type="text" id="descricao" placeholder="Descrição" />
+    <button onclick="criarItem()">Adicionar Item</button>
+  </div>
+
+  <hr />
+
+  <div id="lista-itens"></div>
+
+  <script>
+    const API_URL = "http://localhost:3000/items";
+
+    async function carregarItens() {
+      const res = await fetch(API_URL);
+      const itens = await res.json();
+      const lista = document.getElementById("lista-itens");
+      lista.innerHTML = "";
+
+      itens.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "item";
+        div.innerHTML = `
+          <strong>${item.nome}</strong><br/>
+          <em>${item.descricao}</em><br/>
+          <button onclick="editarItem(${item.id})">Editar</button>
+          <button onclick="deletarItem(${item.id})">Excluir</button>
+        `;
+        lista.appendChild(div);
+      });
+    }
+
+    async function criarItem() {
+      const nome = document.getElementById("nome").value;
+      const descricao = document.getElementById("descricao").value;
+
+      await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome, descricao })
+      });
+
+      document.getElementById("nome").value = "";
+      document.getElementById("descricao").value = "";
+      carregarItens();
+    }
+
+    async function deletarItem(id) {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      carregarItens();
+    }
+
+    async function editarItem(id) {
+      const novoNome = prompt("Novo nome:");
+      const novaDescricao = prompt("Nova descrição:");
+
+      if (!novoNome || !novaDescricao) return;
+
+      await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nome: novoNome, descricao: novaDescricao })
+      });
+
+      carregarItens();
+    }
+
+    carregarItens();
+  </script>
+</body>
+</html>
