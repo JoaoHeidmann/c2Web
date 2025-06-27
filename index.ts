@@ -1,11 +1,14 @@
 import express, { Request, Response } from "express";
+import cors from "cors";
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
+
 app.use(express.json());
+app.use(cors());
 
 const supabase = createClient(
   process.env.SUPABASE_URL!,
@@ -56,7 +59,7 @@ app.delete("/items/:id", async (req: Request, res: Response) => {
   res.json({ message: "Item deletado com sucesso!", data });
 });
 
-// ✅ ROTA RAIZ
+// ROTA RAIZ
 app.get("/", (_req: Request, res: Response) => {
   res.send("API Supabase CRUD está funcionando!");
 });
